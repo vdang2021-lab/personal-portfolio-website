@@ -10,7 +10,7 @@ const companies = [
     name: 'Triumph Financial',
     logo: triumphMark,
     logoAlt: 'Triumph Financial logo',
-    note: 'Payments analytics and modeling to support product and marketing decisions',
+    note: 'Built analytics, predictive models, and experimentation frameworks to support product, go-to-market, and customer strategy',
   },
   {
     name: 'LoadPay',
@@ -22,7 +22,7 @@ const companies = [
     name: 'Marcus Thomas',
     logo: marcusThomasMark,
     logoAlt: 'Marcus Thomas logo',
-    note: 'Data solutions and analytics for client marketing performance',
+    note: 'Delivered data solutions and analytics to drive client performance and strategic decision-making',
   },
   {
     name: 'Grant Thornton',
@@ -33,10 +33,10 @@ const companies = [
 ];
 
 const currentFocus = [
-  'Scaling payments products like LoadPay',
-  'Driving growth through data and analytics',
-  'Building lead scoring and sales intelligence systems',
-  'Turning data into actionable business decisions',
+  'Scaling payments products through data and experimentation',
+  'Building predictive models for lead scoring and targeting',
+  'Designing experiments to improve sales conversion and GTM strategy',
+  'Turning data into actionable decisions across product and go-to-market teams',
 ];
 
 export function WorkedWith() {

@@ -23,7 +23,6 @@ export function Navigation() {
     { label: 'Home', href: '/' },
     { label: 'Experience', href: '/experience' },
     { label: 'Projects', href: '/projects' },
-    { label: 'Skills', href: '/skills' },
     { label: 'Interests', href: '/interests' },
   ];
 

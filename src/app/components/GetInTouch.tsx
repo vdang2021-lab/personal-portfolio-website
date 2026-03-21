@@ -1,4 +1,4 @@
-import { Mail, Linkedin, Twitter } from 'lucide-react';
+import { Mail, Linkedin, Twitter, Github } from 'lucide-react';
 import { motion } from 'motion/react';
 
 const contactLinks = [
@@ -11,8 +11,14 @@ const contactLinks = [
   {
     label: 'Twitter',
     href: 'https://twitter.com',
-    value: 'Say hello or follow along',
+    value: 'Thoughts, ideas, and updates',
     icon: Twitter,
+  },
+  {
+    label: 'GitHub',
+    href: 'https://github.com',
+    value: 'Projects, experiments, and code',
+    icon: Github,
   },
   {
     label: 'Email',
@@ -39,7 +45,7 @@ export function GetInTouch() {
           </h2>
         </motion.div>
 
-        <div className="grid gap-4 md:grid-cols-3">
+        <div className="grid gap-4 md:grid-cols-2">
           {contactLinks.map((link, index) => {
             const Icon = link.icon;
 

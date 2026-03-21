@@ -1,31 +1,108 @@
 import { motion } from 'motion/react';
-import { ArrowLeft, Compass, Camera, Dumbbell, Plane } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { Navigation } from '../components/Navigation';
 import { Footer } from '../components/Footer';
+import books1 from '../../assets/interests/books-1.jpeg';
+import family1 from '../../assets/interests/family-1.jpeg';
+import family2 from '../../assets/interests/family-2.jpeg';
+import food1 from '../../assets/interests/food-1.jpeg';
+import food2 from '../../assets/interests/food-2.jpeg';
+import friends1 from '../../assets/interests/friends-1.JPG';
+import friends2 from '../../assets/interests/friends-2.jpeg';
+import friends3 from '../../assets/interests/friends-3.jpeg';
+import gym1 from '../../assets/interests/gym-1.JPG';
+import gym2 from '../../assets/interests/gym-2.jpeg';
+import travelLisbon from '../../assets/interests/travel-lisbon.jpeg';
+import travelSpain from '../../assets/interests/travel-spain.jpeg';
+import travelVietnam1 from '../../assets/interests/travel-vietnam-1.JPG';
+import travelVietnam2 from '../../assets/interests/travel-vietnam-2.JPG';
 
-const interestAreas = [
-  {
-    title: 'Life Outside Work',
-    description: 'A place to share a few of the routines, hobbies, and experiences that shape how I think and recharge.',
-    icon: Compass,
-  },
-  {
-    title: 'Places & Travel',
-    description: 'A future section for travel moments, memorable trips, and the environments that inspire me.',
-    icon: Plane,
-  },
-  {
-    title: 'Health & Routine',
-    description: 'A future section for fitness, habits, consistency, and the systems I like building in everyday life.',
-    icon: Dumbbell,
-  },
-  {
-    title: 'Photos & Visuals',
-    description: 'A future section for selected photos, visual snapshots, and moments worth remembering.',
-    icon: Camera,
-  },
-];
+type MomentImage = {
+  alt: string;
+  src?: string;
+  caption?: string;
+};
+
+function MomentTile({
+  caption,
+  images,
+  eyebrow,
+  frameClassName,
+}: {
+  caption: string;
+  images: MomentImage[];
+  eyebrow?: string;
+  frameClassName: string;
+}) {
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
+  const hasMultipleImages = images.length > 1;
+
+  useEffect(() => {
+    setActiveIndex(0);
+  }, [images]);
+
+  useEffect(() => {
+    for (const image of images) {
+      if (!image.src) continue;
+      const preloadImage = new Image();
+      preloadImage.src = image.src;
+    }
+  }, [images]);
+
+  useEffect(() => {
+    if (!hasMultipleImages || isPaused) return;
+
+    const intervalId = window.setInterval(() => {
+      setActiveIndex((currentIndex) => (currentIndex + 1) % images.length);
+    }, 4200);
+
+    return () => window.clearInterval(intervalId);
+  }, [hasMultipleImages, images.length, isPaused]);
+
+  return (
+    <div
+      className="space-y-3"
+      onMouseEnter={() => setIsPaused(true)}
+      onMouseLeave={() => setIsPaused(false)}
+    >
+      {eyebrow ? (
+        <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">{eyebrow}</p>
+      ) : null}
+
+      <div
+        className={`${frameClassName} relative overflow-hidden rounded-3xl shadow-[0_18px_44px_rgba(0,0,0,0.16)] transition duration-500 hover:scale-[1.01] hover:brightness-[1.03]`}
+      >
+        {images.map((image, index) => (
+          <div
+            key={`${caption}-${index}-${image.alt}`}
+            className={`absolute inset-0 transition-opacity duration-700 ${
+              index === activeIndex ? 'opacity-100' : 'opacity-0'
+            }`}
+            aria-hidden={index === activeIndex ? undefined : true}
+          >
+            {image.src ? (
+              <img
+                src={image.src}
+                alt={image.alt}
+                loading="lazy"
+                className="h-full w-full object-cover"
+              />
+            ) : (
+              <div className="flex h-full items-end bg-[linear-gradient(180deg,rgba(30,37,53,0.35),rgba(18,24,36,0.92))] p-5">
+                <span className="text-sm text-foreground/82">{image.caption ?? caption}</span>
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+
+      <figcaption className="text-sm text-muted-foreground">{caption}</figcaption>
+    </div>
+  );
+}
 
 export default function InterestsPage() {
   const navigate = useNavigate();
@@ -48,7 +125,7 @@ export default function InterestsPage() {
           </motion.button>
 
           <motion.div
-            className="max-w-3xl space-y-5 mb-14"
+            className="max-w-3xl space-y-5 mb-12"
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
@@ -58,47 +135,136 @@ export default function InterestsPage() {
               A quieter page for the things that matter outside of work.
             </h1>
             <p className="text-lg text-muted-foreground leading-relaxed">
-              This is a starter layout for interests. We can grow it into something more personal
-              over time with photos, favorite activities, routines, or travel moments.
+              A quick snapshot of the moments, people, and places that stick with me.
             </p>
           </motion.div>
 
-          <div className="grid gap-6 md:grid-cols-2">
-            {interestAreas.map((area, index) => {
-              const Icon = area.icon;
+          <div className="space-y-5">
+            <div className="grid gap-5 md:grid-cols-2">
+              <motion.figure
+                initial={{ opacity: 0, y: 24 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: '-80px' }}
+                transition={{ duration: 0.45, delay: 0.04 }}
+              >
+                <MomentTile
+                  caption="Family time"
+                  images={[
+                    { alt: 'Family moment', src: family1, caption: 'Family time' },
+                    { alt: 'Family photo together', src: family2, caption: 'Family time' },
+                  ]}
+                  eyebrow="Core part of life"
+                  frameClassName="aspect-[4/5]"
+                />
+              </motion.figure>
 
-              return (
-                <motion.article
-                  key={area.title}
-                  className="rounded-3xl border border-dashed border-border/70 bg-card/35 p-7"
-                  initial={{ opacity: 0, y: 24 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, margin: '-80px' }}
-                  transition={{ duration: 0.45, delay: index * 0.08 }}
-                  whileHover={{ y: -4, borderColor: 'rgba(6, 182, 212, 0.35)' }}
-                >
-                  <div className="space-y-5">
-                    <div className="flex items-center justify-between gap-4">
-                      <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-border/70 bg-background/80">
-                        <Icon className="w-5 h-5 text-accent" />
-                      </div>
-                      <span className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
-                        Wireframe
-                      </span>
-                    </div>
+              <motion.figure
+                initial={{ opacity: 0, y: 24 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: '-80px' }}
+                transition={{ duration: 0.45, delay: 0.08 }}
+              >
+                <MomentTile
+                  caption="Time with friends"
+                  images={[
+                    { alt: 'Time with friends outdoors', src: friends1, caption: 'Time with friends' },
+                    { alt: 'Friends hanging out', src: friends2, caption: 'Time with friends' },
+                    { alt: 'Friends candid moment', src: friends3, caption: 'Time with friends' },
+                  ]}
+                  frameClassName="aspect-[5/6]"
+                />
+              </motion.figure>
+            </div>
 
-                    <div className="space-y-3">
-                      <h2 className="text-2xl font-semibold">{area.title}</h2>
-                      <p className="text-muted-foreground leading-relaxed">{area.description}</p>
-                    </div>
+            <motion.figure
+              initial={{ opacity: 0, y: 24 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: '-80px' }}
+              transition={{ duration: 0.45, delay: 0.1 }}
+            >
+              <MomentTile
+                caption="Vietnam, Spain, Lisbon"
+                images={[
+                  { alt: 'Travel in Spain', src: travelSpain, caption: 'Vietnam, Spain, Lisbon' },
+                  { alt: 'Travel in Lisbon', src: travelLisbon, caption: 'Vietnam, Spain, Lisbon' },
+                  { alt: 'Travel in Vietnam', src: travelVietnam1, caption: 'Vietnam, Spain, Lisbon' },
+                  { alt: 'Travel in Vietnam city scene', src: travelVietnam2, caption: 'Vietnam, Spain, Lisbon' },
+                ]}
+                eyebrow="Trips that stick"
+                frameClassName="aspect-[16/8]"
+              />
+            </motion.figure>
 
-                    <div className="rounded-2xl border border-border/60 bg-background/70 px-4 py-4 text-sm text-muted-foreground">
-                      Placeholder content block for future notes, images, or stories.
-                    </div>
-                  </div>
-                </motion.article>
-              );
-            })}
+            <div className="grid gap-5 md:grid-cols-12">
+              <motion.figure
+                className="md:col-span-5"
+                initial={{ opacity: 0, y: 24 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: '-80px' }}
+                transition={{ duration: 0.45, delay: 0.12 }}
+              >
+                <MomentTile
+                  caption="Gym / health"
+                  images={[
+                    { alt: 'Gym routine photo', src: gym1, caption: 'Gym / health' },
+                    { alt: 'Health and activity moment', src: gym2, caption: 'Gym / health' },
+                  ]}
+                  frameClassName="aspect-[4/5]"
+                />
+              </motion.figure>
+
+              <motion.figure
+                className="md:col-span-7"
+                initial={{ opacity: 0, y: 24 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: '-80px' }}
+                transition={{ duration: 0.45, delay: 0.16 }}
+              >
+                <MomentTile
+                  caption="Trying new spots"
+                  images={[
+                    { alt: 'Food spot photo', src: food1, caption: 'Trying new spots' },
+                    { alt: 'Trying a new food spot', src: food2, caption: 'Trying new spots' },
+                  ]}
+                  frameClassName="aspect-[7/5]"
+                />
+              </motion.figure>
+            </div>
+
+            <div className="flex flex-col gap-5 md:flex-row md:items-start">
+              <motion.figure
+                className="md:w-[42%]"
+                initial={{ opacity: 0, y: 24 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: '-80px' }}
+                transition={{ duration: 0.45, delay: 0.18 }}
+              >
+                <MomentTile
+                  caption="Books + deep dives"
+                  images={[
+                    { alt: 'Books and reading setup', src: books1, caption: 'Books + deep dives' },
+                  ]}
+                  frameClassName="aspect-[4/5]"
+                />
+              </motion.figure>
+
+              <motion.figure
+                className="md:w-[58%] md:pt-10"
+                initial={{ opacity: 0, y: 24 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: '-80px' }}
+                transition={{ duration: 0.45, delay: 0.22 }}
+              >
+                <MomentTile
+                  caption="Animes I'm watching"
+                  images={[
+                    { alt: 'Anime or gaming photo placeholder', caption: "Animes I'm watching" },
+                    { alt: 'Screen setup placeholder', caption: "Animes I'm watching" },
+                  ]}
+                  frameClassName="aspect-[7/5]"
+                />
+              </motion.figure>
+            </div>
           </div>
         </div>
       </main>

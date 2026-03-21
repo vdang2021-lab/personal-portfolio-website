@@ -1,4 +1,4 @@
-import { ArrowRight, BriefcaseBusiness, ChartColumn, Wrench } from 'lucide-react';
+import { ArrowRight, BriefcaseBusiness, ChartColumn, Compass } from 'lucide-react';
 import { motion } from 'motion/react';
 import { useNavigate } from 'react-router';
 
@@ -17,10 +17,11 @@ const sections = [
     featured: true,
   },
   {
-    title: 'Skills',
-    description: 'Tools and strengths I use to solve real data problems.',
-    href: '/skills',
-    icon: Wrench,
+    title: 'Beyond Work',
+    description: "What I'm into outside of data, analytics, and building.",
+    href: '/interests',
+    icon: Compass,
+    subdued: true,
   },
 ];
 
@@ -54,7 +55,9 @@ export function ExploreSections() {
                   'shadow-[0_18px_50px_rgba(0,0,0,0.18)]',
                   section.featured
                     ? 'border-accent/30 bg-gradient-to-b from-[#21283a] to-[#141b28]'
-                    : 'border-border/55 hover:border-accent/45',
+                    : section.subdued
+                      ? 'border-border/45 hover:border-border/70'
+                      : 'border-border/55 hover:border-accent/45',
                 ].join(' ')}
                 initial={{ opacity: 0, y: 24 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -64,7 +67,9 @@ export function ExploreSections() {
                   y: -8,
                   boxShadow: section.featured
                     ? '0 24px 64px rgba(0, 0, 0, 0.26), 0 0 0 1px rgba(6, 182, 212, 0.08)'
-                    : '0 22px 56px rgba(0, 0, 0, 0.22)',
+                    : section.subdued
+                      ? '0 20px 48px rgba(0, 0, 0, 0.18)'
+                      : '0 22px 56px rgba(0, 0, 0, 0.22)',
                 }}
                 style={
                   section.featured

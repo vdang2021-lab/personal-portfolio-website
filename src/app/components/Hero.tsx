@@ -3,7 +3,7 @@ import heroImage from '../../assets/vinny-hero.jpeg';
 
 const introParagraphs = [
   "Hey, I'm Vinny! I'm currently on the data team at Triumph Financial, where I work across payments, marketing, customer experience, and sales analytics, supporting products like LoadPay.",
-  "I use data to help teams understand what's happening and make better decisions. Before this, I worked at a marketing agency helping clients implement data solutions, and started my career in audit at Grant Thornton.",
+  "I use data to help teams understand what's happening and make better decisions. Before this, I worked at a marketing agency helping clients implement data solutions, and started my career in accounting at Grant Thornton.",
   "Outside of work, I'm into fitness and health, trading, and exploring new tech and tools. Feel free to reach out!",
 ];
 const introWords = introParagraphs.map((paragraph) => paragraph.split(' '));
