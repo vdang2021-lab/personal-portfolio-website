@@ -187,7 +187,7 @@ function WatchingCard() {
     >
       <div className="flex h-full min-h-[248px] flex-col justify-between gap-5 rounded-[24px] bg-[linear-gradient(180deg,rgba(22,28,40,0.92),rgba(14,19,29,0.98))] px-5 py-6">
         <div className="space-y-2">
-          <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Favorite Anime</p>
+          <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">My Favorite Anime</p>
         </div>
 
         <ul className="space-y-3 text-sm text-foreground/86">
@@ -317,7 +317,7 @@ export default function InterestsPage() {
           <div className="mt-5 grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-6">
             <PhotoCard
               className="xl:col-span-2"
-              caption="Reading"
+              caption="Books I’ve read"
               images={[
                 { alt: 'Books and reading setup upright', src: books1Upright },
               ]}

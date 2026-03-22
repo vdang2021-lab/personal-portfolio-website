@@ -1,27 +1,19 @@
-import { ArrowRight, BriefcaseBusiness, ChartColumn, Compass } from 'lucide-react';
+import { ArrowRight, ChartColumn, Compass } from 'lucide-react';
 import { motion } from 'motion/react';
 import { useNavigate } from 'react-router';
 
 const sections = [
   {
-    title: 'Experience',
-    description: 'Experience using data to drive decisions across fintech and analytics.',
-    href: '/experience',
-    icon: BriefcaseBusiness,
-  },
-  {
     title: 'Projects',
     description: 'Projects focused on payments growth, analytics, and decision-making.',
     href: '/projects',
     icon: ChartColumn,
-    featured: true,
   },
   {
     title: 'Beyond Work',
     description: "What I'm into outside of data, analytics, and building.",
     href: '/interests',
     icon: Compass,
-    subdued: true,
   },
 ];
 
@@ -31,6 +23,7 @@ export function ExploreSections() {
   return (
     <section className="py-24 px-6">
       <div className="max-w-6xl mx-auto">
+        <div className="max-w-4xl mx-auto">
         <motion.div
           className="max-w-2xl mb-12 space-y-4"
           initial={{ opacity: 0, y: 30 }}
@@ -41,7 +34,7 @@ export function ExploreSections() {
           <p className="text-sm uppercase tracking-[0.24em] text-accent">Explore More</p>
         </motion.div>
 
-        <div className="grid gap-6 md:grid-cols-3">
+        <div className="grid gap-4 md:grid-cols-2">
           {sections.map((section, index) => {
             const Icon = section.icon;
 
@@ -53,11 +46,7 @@ export function ExploreSections() {
                   'group rounded-3xl border p-8 text-left transition-colors',
                   'bg-gradient-to-b from-[#1b2130] to-[#131924]',
                   'shadow-[0_18px_50px_rgba(0,0,0,0.18)]',
-                  section.featured
-                    ? 'border-accent/30 bg-gradient-to-b from-[#21283a] to-[#141b28]'
-                    : section.subdued
-                      ? 'border-border/45 hover:border-border/70'
-                      : 'border-border/55 hover:border-accent/45',
+                  'border-border/55',
                 ].join(' ')}
                 initial={{ opacity: 0, y: 24 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -65,19 +54,10 @@ export function ExploreSections() {
                 transition={{ duration: 0.45, delay: index * 0.08 }}
                 whileHover={{
                   y: -8,
-                  boxShadow: section.featured
-                    ? '0 24px 64px rgba(0, 0, 0, 0.26), 0 0 0 1px rgba(6, 182, 212, 0.08)'
-                    : section.subdued
-                      ? '0 20px 48px rgba(0, 0, 0, 0.18)'
-                      : '0 22px 56px rgba(0, 0, 0, 0.22)',
+                  scale: 1.015,
+                  borderColor: 'rgba(6, 182, 212, 0.35)',
+                  boxShadow: '0 24px 64px rgba(0, 0, 0, 0.24), 0 0 0 1px rgba(6, 182, 212, 0.08)',
                 }}
-                style={
-                  section.featured
-                    ? {
-                        boxShadow: '0 20px 56px rgba(0, 0, 0, 0.22), 0 0 0 1px rgba(6, 182, 212, 0.06)',
-                      }
-                    : undefined
-                }
               >
                 <div className="flex items-start justify-between gap-4 mb-6">
                   <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-white/6 bg-white/4">
@@ -97,6 +77,7 @@ export function ExploreSections() {
               </motion.button>
             );
           })}
+        </div>
         </div>
       </div>
     </section>

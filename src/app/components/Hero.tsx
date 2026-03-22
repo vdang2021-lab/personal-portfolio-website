@@ -11,8 +11,15 @@ const contactLinks = [
   {
     label: 'LinkedIn (/vincent-dangg)',
     href: 'https://www.linkedin.com/in/vincent-dangg',
+    newTab: true,
   },
-  { label: 'X (@vinnnnnyd)', href: 'https://x.com/vinnnnnyd' },
+  { label: 'X (@vinnnnnyd)', href: 'https://x.com/vinnnnnyd', newTab: true },
+  {
+    label: 'Resume',
+    href: '/vinny-dang-resume.pdf',
+    newTab: true,
+    download: true,
+  },
   { label: 'Email', href: 'mailto:vdang2021@gmail.com' },
 ];
 
@@ -114,8 +121,9 @@ export function Hero() {
               <span key={link.label}>
                 <a
                   href={link.href}
-                  target={link.href.startsWith('http') ? '_blank' : undefined}
-                  rel={link.href.startsWith('http') ? 'noopener noreferrer' : undefined}
+                  target={link.newTab ? '_blank' : undefined}
+                  rel={link.newTab ? 'noopener noreferrer' : undefined}
+                  download={link.download ? 'Vinny-Dang-Resume.pdf' : undefined}
                   className="transition-colors hover:text-foreground hover:underline underline-offset-4"
                 >
                   {link.label}

@@ -21,7 +21,6 @@ export function Navigation() {
 
   const navItems = [
     { label: 'Home', href: '/' },
-    { label: 'Experience', href: '/experience' },
     { label: 'Projects', href: '/projects' },
     { label: 'Interests', href: '/interests' },
   ];
