@@ -1,10 +1,10 @@
 import { motion } from 'motion/react';
 import { ArrowLeft } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { Navigation } from '../components/Navigation';
 import { Footer } from '../components/Footer';
-import books1 from '../../assets/interests/books-1.jpeg';
+import books1Upright from '../../assets/interests/books-1-upright.jpeg';
 import family1 from '../../assets/interests/family-1.jpeg';
 import family2 from '../../assets/interests/family-2.jpeg';
 import food1 from '../../assets/interests/food-1.jpeg';
@@ -25,82 +25,199 @@ type MomentImage = {
   caption?: string;
 };
 
-function MomentTile({
-  caption,
-  images,
-  eyebrow,
-  frameClassName,
-}: {
+type PhotoCardProps = {
   caption: string;
   images: MomentImage[];
-  eyebrow?: string;
-  frameClassName: string;
-}) {
+  label?: string;
+  className?: string;
+  frameClassName?: string;
+  imageClassName?: string;
+  contentClassName?: string;
+};
+
+const watchingNow = [
+  'Naruto',
+  'Hunter x Hunter',
+  'Attack on Titan',
+  'Death Note',
+  'Orb: On the Movements of Earth',
+];
+
+function PhotoCard({
+  caption,
+  images,
+  label,
+  className = '',
+  frameClassName = 'aspect-[16/10]',
+  imageClassName = 'object-cover',
+  contentClassName = 'space-y-3',
+}: PhotoCardProps) {
+  const normalizedImages = useMemo(
+    () => images.filter((image) => Boolean(image.src) || Boolean(image.caption)),
+    [images],
+  );
   const [activeIndex, setActiveIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
-  const hasMultipleImages = images.length > 1;
+  const [loadedIndexes, setLoadedIndexes] = useState<Record<number, boolean>>({});
+  const [failedIndexes, setFailedIndexes] = useState<Record<number, boolean>>({});
+  const availableIndexes = normalizedImages
+    .map((_, index) => index)
+    .filter((index) => !failedIndexes[index]);
+  const fallbackIndex = availableIndexes[0] ?? 0;
+  const safeActiveIndex = availableIndexes.includes(activeIndex) ? activeIndex : fallbackIndex;
+  const visibleImage = normalizedImages[safeActiveIndex];
+  const hasMultipleImages = availableIndexes.length > 1;
 
   useEffect(() => {
     setActiveIndex(0);
-  }, [images]);
+    setLoadedIndexes({});
+    setFailedIndexes({});
+  }, [normalizedImages]);
 
   useEffect(() => {
-    for (const image of images) {
+    for (const image of normalizedImages) {
       if (!image.src) continue;
       const preloadImage = new Image();
       preloadImage.src = image.src;
+      if ('decoding' in preloadImage) {
+        preloadImage.decoding = 'async';
+      }
     }
-  }, [images]);
+  }, [normalizedImages]);
 
   useEffect(() => {
     if (!hasMultipleImages || isPaused) return;
 
     const intervalId = window.setInterval(() => {
-      setActiveIndex((currentIndex) => (currentIndex + 1) % images.length);
+      setActiveIndex((currentIndex) => {
+        const currentPosition = availableIndexes.indexOf(currentIndex);
+        const nextPosition =
+          currentPosition >= 0 ? (currentPosition + 1) % availableIndexes.length : 0;
+        return availableIndexes[nextPosition] ?? fallbackIndex;
+      });
     }, 4200);
 
     return () => window.clearInterval(intervalId);
-  }, [hasMultipleImages, images.length, isPaused]);
+  }, [availableIndexes, fallbackIndex, hasMultipleImages, isPaused]);
+
+  useEffect(() => {
+    if (!availableIndexes.includes(activeIndex)) {
+      setActiveIndex(fallbackIndex);
+    }
+  }, [activeIndex, availableIndexes, fallbackIndex]);
 
   return (
-    <div
-      className="space-y-3"
+    <motion.article
+      className={`group rounded-3xl border border-border/60 bg-card/35 p-4 shadow-[0_18px_44px_rgba(0,0,0,0.12)] transition-all duration-500 hover:-translate-y-1 hover:shadow-[0_24px_60px_rgba(0,0,0,0.18)] ${className}`}
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
+      initial={{ opacity: 0, y: 24 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: '-80px' }}
+      transition={{ duration: 0.45 }}
     >
-      {eyebrow ? (
-        <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">{eyebrow}</p>
-      ) : null}
+      <div className={contentClassName}>
+        {label ? (
+          <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">{label}</p>
+        ) : null}
 
-      <div
-        className={`${frameClassName} relative overflow-hidden rounded-3xl shadow-[0_18px_44px_rgba(0,0,0,0.16)] transition duration-500 hover:scale-[1.01] hover:brightness-[1.03]`}
-      >
-        {images.map((image, index) => (
+        <div
+          className={`${frameClassName} relative overflow-hidden rounded-[24px] bg-[linear-gradient(180deg,rgba(30,37,53,0.34),rgba(18,24,36,0.86))]`}
+        >
           <div
-            key={`${caption}-${index}-${image.alt}`}
-            className={`absolute inset-0 transition-opacity duration-700 ${
-              index === activeIndex ? 'opacity-100' : 'opacity-0'
+            className={`absolute inset-0 transition-opacity duration-500 ${
+              loadedIndexes[safeActiveIndex] ? 'opacity-0' : 'opacity-100'
             }`}
-            aria-hidden={index === activeIndex ? undefined : true}
+            aria-hidden="true"
           >
-            {image.src ? (
-              <img
-                src={image.src}
-                alt={image.alt}
-                loading="lazy"
-                className="h-full w-full object-cover"
-              />
-            ) : (
-              <div className="flex h-full items-end bg-[linear-gradient(180deg,rgba(30,37,53,0.35),rgba(18,24,36,0.92))] p-5">
-                <span className="text-sm text-foreground/82">{image.caption ?? caption}</span>
-              </div>
-            )}
+            <div className="h-full w-full animate-pulse bg-[linear-gradient(110deg,rgba(255,255,255,0.03),rgba(255,255,255,0.08),rgba(255,255,255,0.03))]" />
           </div>
-        ))}
-      </div>
 
-      <figcaption className="text-sm text-muted-foreground">{caption}</figcaption>
-    </div>
+          {normalizedImages.map((image, index) => (
+            <div
+              key={`${caption}-${index}-${image.alt}`}
+              className={`absolute inset-0 transition-opacity duration-700 ${
+                index === safeActiveIndex ? 'opacity-100' : 'opacity-0'
+              }`}
+              aria-hidden={index === safeActiveIndex ? undefined : true}
+            >
+              {image.src && !failedIndexes[index] ? (
+                <img
+                  src={image.src}
+                  alt={image.alt}
+                  loading={index === 0 ? 'eager' : 'lazy'}
+                  fetchPriority={index === 0 ? 'high' : 'auto'}
+                  onLoad={() =>
+                    setLoadedIndexes((current) => ({
+                      ...current,
+                      [index]: true,
+                    }))
+                  }
+                  onError={() =>
+                    setFailedIndexes((current) => ({
+                      ...current,
+                      [index]: true,
+                    }))
+                  }
+                  className={`h-full w-full object-cover transition duration-500 group-hover:scale-[1.02] group-hover:brightness-[1.03] ${imageClassName}`}
+                />
+              ) : (
+                <div className="flex h-full items-end bg-[linear-gradient(180deg,rgba(30,37,53,0.45),rgba(18,24,36,0.96))] p-5">
+                  <span className="text-sm text-foreground/82">{image.caption ?? caption}</span>
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+
+        <p className="text-sm text-muted-foreground">{caption}</p>
+      </div>
+    </motion.article>
+  );
+}
+
+function WatchingCard() {
+  return (
+    <motion.article
+      className="rounded-3xl border border-border/60 bg-card/35 p-4 shadow-[0_18px_44px_rgba(0,0,0,0.12)] transition-all duration-500 hover:-translate-y-1 hover:shadow-[0_24px_60px_rgba(0,0,0,0.18)]"
+      initial={{ opacity: 0, y: 24 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: '-80px' }}
+      transition={{ duration: 0.45 }}
+    >
+      <div className="flex h-full min-h-[248px] flex-col justify-between gap-5 rounded-[24px] bg-[linear-gradient(180deg,rgba(22,28,40,0.92),rgba(14,19,29,0.98))] px-5 py-6">
+        <div className="space-y-2">
+          <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Favorite Anime</p>
+        </div>
+
+        <ul className="space-y-3 text-sm text-foreground/86">
+          {watchingNow.map((item) => (
+            <li key={item} className="border-b border-white/8 pb-3 last:border-b-0 last:pb-0">
+              {item}
+            </li>
+          ))}
+        </ul>
+      </div>
+    </motion.article>
+  );
+}
+
+function PodcastCard() {
+  return (
+    <motion.article
+      className="rounded-3xl border border-white/10 bg-[linear-gradient(135deg,rgba(12,17,26,0.98),rgba(24,31,45,0.92),rgba(10,62,82,0.82))] p-4 shadow-[0_22px_58px_rgba(0,0,0,0.2)] transition-all duration-500 hover:-translate-y-1 hover:shadow-[0_24px_60px_rgba(0,0,0,0.18)]"
+      initial={{ opacity: 0, y: 24 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: '-80px' }}
+      transition={{ duration: 0.45 }}
+    >
+      <div className="flex h-full flex-col gap-4 rounded-[24px] bg-[linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0))] px-5 py-6">
+        <div className="space-y-2">
+          <p className="text-xs uppercase tracking-[0.2em] text-foreground/56">Current Favorite Podcast</p>
+          <h2 className="text-2xl font-semibold tracking-tight">Huberman Lab Podcast</h2>
+        </div>
+      </div>
+    </motion.article>
   );
 }
 
@@ -139,131 +256,77 @@ export default function InterestsPage() {
             </p>
           </motion.div>
 
-          <div className="space-y-5">
-            <div className="grid gap-5 md:grid-cols-2">
-              <motion.figure
-                initial={{ opacity: 0, y: 24 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: '-80px' }}
-                transition={{ duration: 0.45, delay: 0.04 }}
-              >
-                <MomentTile
-                  caption="Family time"
-                  images={[
-                    { alt: 'Family moment', src: family1, caption: 'Family time' },
-                    { alt: 'Family photo together', src: family2, caption: 'Family time' },
-                  ]}
-                  eyebrow="Core part of life"
-                  frameClassName="aspect-[4/5]"
-                />
-              </motion.figure>
+          <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-6">
+            <PhotoCard
+              className="xl:col-span-2"
+              caption="Being with family"
+              images={[
+                { alt: 'Family moment', src: family1 },
+                { alt: 'Family photo together', src: family2 },
+              ]}
+            />
 
-              <motion.figure
-                initial={{ opacity: 0, y: 24 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: '-80px' }}
-                transition={{ duration: 0.45, delay: 0.08 }}
-              >
-                <MomentTile
-                  caption="Time with friends"
-                  images={[
-                    { alt: 'Time with friends outdoors', src: friends1, caption: 'Time with friends' },
-                    { alt: 'Friends hanging out', src: friends2, caption: 'Time with friends' },
-                    { alt: 'Friends candid moment', src: friends3, caption: 'Time with friends' },
-                  ]}
-                  frameClassName="aspect-[5/6]"
-                />
-              </motion.figure>
-            </div>
+            <PhotoCard
+              className="xl:col-span-2"
+              caption="Hanging with friends"
+              images={[
+                { alt: 'Time with friends outdoors', src: friends1 },
+                { alt: 'Friends hanging out', src: friends2 },
+                { alt: 'Friends candid moment', src: friends3 },
+              ]}
+            />
 
-            <motion.figure
-              initial={{ opacity: 0, y: 24 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: '-80px' }}
-              transition={{ duration: 0.45, delay: 0.1 }}
-            >
-              <MomentTile
-                caption="Vietnam, Spain, Lisbon"
+            <PhotoCard
+              className="xl:col-span-2"
+              caption="Working out"
+              images={[
+                { alt: 'Gym routine photo', src: gym1 },
+                { alt: 'Health and activity moment', src: gym2 },
+              ]}
+            />
+          </div>
+
+          <div className="mt-5 grid grid-cols-1 gap-5 xl:grid-cols-6">
+            <PhotoCard
+              caption="Memorable trips"
+              className="xl:col-span-4"
+              frameClassName="aspect-[16/7.3]"
+              images={[
+                { alt: 'Travel in Lisbon', src: travelLisbon },
+                { alt: 'Travel in Spain', src: travelSpain },
+                { alt: 'Travel in Vietnam', src: travelVietnam1 },
+                { alt: 'Travel in Vietnam city scene', src: travelVietnam2 },
+              ]}
+            />
+
+            <div className="flex flex-col gap-5 xl:col-span-2 xl:self-start">
+              <PhotoCard
+                caption="Trying new places"
                 images={[
-                  { alt: 'Travel in Spain', src: travelSpain, caption: 'Vietnam, Spain, Lisbon' },
-                  { alt: 'Travel in Lisbon', src: travelLisbon, caption: 'Vietnam, Spain, Lisbon' },
-                  { alt: 'Travel in Vietnam', src: travelVietnam1, caption: 'Vietnam, Spain, Lisbon' },
-                  { alt: 'Travel in Vietnam city scene', src: travelVietnam2, caption: 'Vietnam, Spain, Lisbon' },
+                  { alt: 'Food spot photo', src: food1 },
+                  { alt: 'Trying a new food spot', src: food2 },
                 ]}
-                eyebrow="Trips that stick"
-                frameClassName="aspect-[16/8]"
+                frameClassName="aspect-[16/9]"
+                imageClassName="object-cover object-center"
               />
-            </motion.figure>
 
-            <div className="grid gap-5 md:grid-cols-12">
-              <motion.figure
-                className="md:col-span-5"
-                initial={{ opacity: 0, y: 24 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: '-80px' }}
-                transition={{ duration: 0.45, delay: 0.12 }}
-              >
-                <MomentTile
-                  caption="Gym / health"
-                  images={[
-                    { alt: 'Gym routine photo', src: gym1, caption: 'Gym / health' },
-                    { alt: 'Health and activity moment', src: gym2, caption: 'Gym / health' },
-                  ]}
-                  frameClassName="aspect-[4/5]"
-                />
-              </motion.figure>
-
-              <motion.figure
-                className="md:col-span-7"
-                initial={{ opacity: 0, y: 24 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: '-80px' }}
-                transition={{ duration: 0.45, delay: 0.16 }}
-              >
-                <MomentTile
-                  caption="Trying new spots"
-                  images={[
-                    { alt: 'Food spot photo', src: food1, caption: 'Trying new spots' },
-                    { alt: 'Trying a new food spot', src: food2, caption: 'Trying new spots' },
-                  ]}
-                  frameClassName="aspect-[7/5]"
-                />
-              </motion.figure>
+              <PodcastCard />
             </div>
+          </div>
 
-            <div className="flex flex-col gap-5 md:flex-row md:items-start">
-              <motion.figure
-                className="md:w-[42%]"
-                initial={{ opacity: 0, y: 24 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: '-80px' }}
-                transition={{ duration: 0.45, delay: 0.18 }}
-              >
-                <MomentTile
-                  caption="Books + deep dives"
-                  images={[
-                    { alt: 'Books and reading setup', src: books1, caption: 'Books + deep dives' },
-                  ]}
-                  frameClassName="aspect-[4/5]"
-                />
-              </motion.figure>
+          <div className="mt-5 grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-6">
+            <PhotoCard
+              className="xl:col-span-2"
+              caption="Reading"
+              images={[
+                { alt: 'Books and reading setup upright', src: books1Upright },
+              ]}
+              frameClassName="aspect-[5/6]"
+              imageClassName="object-cover object-center"
+            />
 
-              <motion.figure
-                className="md:w-[58%] md:pt-10"
-                initial={{ opacity: 0, y: 24 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: '-80px' }}
-                transition={{ duration: 0.45, delay: 0.22 }}
-              >
-                <MomentTile
-                  caption="Animes I'm watching"
-                  images={[
-                    { alt: 'Anime or gaming photo placeholder', caption: "Animes I'm watching" },
-                    { alt: 'Screen setup placeholder', caption: "Animes I'm watching" },
-                  ]}
-                  frameClassName="aspect-[7/5]"
-                />
-              </motion.figure>
+            <div className="xl:col-span-4">
+              <WatchingCard />
             </div>
           </div>
         </div>
