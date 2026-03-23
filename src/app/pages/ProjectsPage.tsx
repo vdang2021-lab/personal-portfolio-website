@@ -33,11 +33,10 @@ export default function ProjectsPage() {
           >
             <p className="text-sm uppercase tracking-[0.24em] text-accent">Projects</p>
             <h1 className="text-4xl md:text-5xl font-bold tracking-tight">
-              Selected analytics work, presented more clearly.
+              A few projects that show how I think through problems.
             </h1>
             <p className="text-lg text-muted-foreground leading-relaxed">
-              These are the kinds of reporting and analysis projects I enjoy most:
-              practical, cross-functional, and tied to business decisions.
+              Less about dashboards, more about helping teams understand what to do next.
             </p>
           </motion.div>
 
@@ -45,35 +44,67 @@ export default function ProjectsPage() {
             {projects.map((project, index) => (
               <motion.article
                 key={project.title}
-                className="rounded-3xl border border-border/70 bg-card/45 p-7"
+                className={`rounded-3xl border p-7 ${
+                  project.status === 'complete'
+                    ? 'border-border/70 bg-card/45'
+                    : 'border-border/45 bg-card/25'
+                }`}
                 initial={{ opacity: 0, y: 24 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: '-80px' }}
                 transition={{ duration: 0.45, delay: index * 0.08 }}
                 whileHover={{ y: -6 }}
               >
-                <div className="space-y-5">
+                <button
+                  type="button"
+                  onClick={project.slug ? () => navigate(`/projects/${project.slug}`) : undefined}
+                  className={`w-full space-y-5 text-left ${
+                    project.slug ? 'cursor-pointer' : 'cursor-default'
+                  }`}
+                >
                   <div className="space-y-3">
+                    {project.status === 'in-progress' ? (
+                      <p className="text-sm uppercase tracking-[0.18em] text-foreground/45">In Progress</p>
+                    ) : null}
+                    {project.status === 'coming-soon' ? (
+                      <p className="text-sm uppercase tracking-[0.18em] text-foreground/45">Coming Soon</p>
+                    ) : null}
                     <h2 className="text-2xl font-semibold">{project.title}</h2>
-                    <p className="text-muted-foreground leading-relaxed">{project.summary}</p>
+                    <p
+                      className={`leading-relaxed ${
+                        project.status === 'complete' ? 'text-muted-foreground' : 'text-foreground/68'
+                      }`}
+                    >
+                      {project.summary}
+                    </p>
                   </div>
 
-                  <div className="rounded-2xl border border-accent/20 bg-accent/6 px-4 py-4">
-                    <p className="text-sm uppercase tracking-[0.18em] text-accent mb-2">Outcome</p>
-                    <p className="text-sm leading-relaxed text-foreground/90">{project.outcome}</p>
-                  </div>
+                  {project.outcome ? (
+                    <div className="rounded-2xl border border-accent/20 bg-accent/6 px-4 py-4">
+                      <p className="text-sm uppercase tracking-[0.18em] text-accent mb-2">Outcome</p>
+                      <p className="text-sm leading-relaxed text-foreground/90">{project.outcome}</p>
+                    </div>
+                  ) : null}
 
                   <div className="flex flex-wrap gap-2">
                     {project.tags.map((tag) => (
                       <span
                         key={tag}
-                        className="rounded-full border border-border/60 bg-background/70 px-3 py-1.5 text-sm text-muted-foreground"
+                        className={`rounded-full border px-3 py-1.5 text-sm ${
+                          project.status === 'complete'
+                            ? 'border-border/60 bg-background/70 text-muted-foreground'
+                            : 'border-border/45 bg-background/55 text-foreground/58'
+                        }`}
                       >
                         {tag}
                       </span>
                     ))}
                   </div>
-                </div>
+
+                  {project.slug ? (
+                    <p className="text-sm text-accent">View how I approached this</p>
+                  ) : null}
+                </button>
               </motion.article>
             ))}
           </div>

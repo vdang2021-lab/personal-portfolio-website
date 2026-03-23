@@ -1,27 +1,35 @@
 export interface ProjectItem {
+  slug?: string;
+  status?: 'complete' | 'in-progress' | 'coming-soon';
   title: string;
   summary: string;
-  outcome: string;
+  outcome?: string;
   tags: string[];
 }
 
 export const projects: ProjectItem[] = [
   {
-    title: 'Payment Adoption Dashboard',
-    summary: 'Built a Power BI dashboard to track instant payment product adoption, user behavior, and transaction trends across multiple sources.',
-    outcome: 'Gave stakeholders a unified view of performance and adoption momentum.',
-    tags: ['Power BI', 'SQL', 'Product Analytics'],
+    slug: 'sales-targeting-model',
+    status: 'complete',
+    title: 'Sales Prioritization Model',
+    summary: 'Built a two-stage machine learning model to rank 79,000+ prospects by expected revenue and focus sales outreach where it mattered most.',
+    outcome: 'Improved targeting efficiency by 2.2x with more realistic pipeline forecasting.',
+    tags: ['Python', 'Machine Learning', 'Revenue Forecasting'],
   },
   {
-    title: 'Customer Segmentation Model',
-    summary: 'Developed a model to identify high-potential customers for new financial products and prioritize outreach efforts.',
-    outcome: 'Helped support a targeted strategy that drove a major increase in adoption.',
-    tags: ['Python', 'Segmentation', 'Customer Analytics'],
+    status: 'in-progress',
+    title: 'Health & Recovery Dashboard',
+    summary: 'Personal analytics project using wearable data to track sleep, activity, and recovery. Currently redesigning the dashboard to improve clarity and long-term trend analysis.',
+    tags: ['Looker Studio', 'Personal Analytics', 'Health Data'],
   },
   {
-    title: 'Marketing Performance Platform',
-    summary: 'Created centralized reporting that connected campaign data with customer lifecycle metrics.',
-    outcome: 'Made it easier for sales and marketing teams to make faster reporting decisions.',
-    tags: ['Looker Studio', 'SQL', 'Marketing Analytics'],
+    status: 'coming-soon',
+    title: 'Marketing Performance Analysis',
+    summary: 'Exploring campaign performance and user behavior patterns to better understand conversion, engagement, and reporting opportunities. Case study coming soon.',
+    tags: ['Marketing Analytics', 'SQL', 'Reporting'],
   },
 ];
+
+export function getProjectBySlug(slug: string) {
+  return projects.find((project) => project.slug === slug);
+}
