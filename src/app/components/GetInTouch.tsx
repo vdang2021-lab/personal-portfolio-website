@@ -4,7 +4,7 @@ import { motion } from 'motion/react';
 const contactLinks = [
   {
     label: 'LinkedIn',
-    href: 'https://linkedin.com',
+    href: 'https://www.linkedin.com/in/vincent-dangg',
     value: 'Connect professionally',
     icon: Linkedin,
   },
