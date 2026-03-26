@@ -27,9 +27,9 @@ export function Navigation() {
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-md border-b border-border/50">
-      <div className="max-w-7xl mx-auto px-8 py-5 flex items-center justify-between">
+      <div className="max-w-7xl mx-auto flex items-center justify-between px-4 py-4 md:px-8 md:py-5">
         <motion.div
-          className="flex gap-12"
+          className="flex flex-1 items-center gap-4 text-sm sm:gap-6 md:flex-none md:gap-12 md:text-base"
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.5 }}
@@ -60,7 +60,7 @@ export function Navigation() {
         </motion.div>
 
         <motion.div
-          className="flex items-center gap-4"
+          className="hidden items-center gap-4 md:flex"
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.5 }}

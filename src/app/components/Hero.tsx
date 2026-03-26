@@ -33,8 +33,8 @@ export function Hero() {
   const contentEase = [0.22, 1, 0.36, 1] as const;
 
   return (
-    <section className="min-h-screen flex items-center justify-center px-8 pt-20">
-      <div className="max-w-7xl w-full grid md:grid-cols-2 gap-16 items-center">
+    <section className="min-h-screen flex items-center justify-center px-6 pt-28 md:px-8 md:pt-20">
+      <div className="max-w-7xl w-full grid gap-12 md:grid-cols-2 md:gap-16 items-center">
         {/* Left side - Text content */}
         <div className="space-y-8">
           <motion.p
@@ -51,7 +51,7 @@ export function Hero() {
           </motion.p>
 
           <motion.h1
-            className="text-6xl md:text-7xl font-bold tracking-tight leading-tight"
+            className="text-5xl md:text-7xl font-bold tracking-tight leading-tight"
             initial={headingInitial}
             animate={contentAnimate}
             transition={

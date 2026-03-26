@@ -13,8 +13,16 @@ export const projects: ProjectItem[] = [
     status: 'complete',
     title: 'Sales Prioritization Model',
     summary: 'Built a two-stage machine learning model to rank 79,000+ prospects by expected revenue and focus sales outreach where it mattered most.',
-    outcome: 'Improved targeting efficiency by 2.2x with more realistic pipeline forecasting.',
-    tags: ['Python', 'Machine Learning', 'Revenue Forecasting'],
+    outcome: 'Delivered a production-ready model that improved sales targeting efficiency by 2.2x and identified $35M in realistic pipeline opportunity.',
+    tags: [
+      'Python',
+      'Machine Learning',
+      'Classification & Regression',
+      'Predictive Modeling',
+      'Revenue Forecasting',
+      'Feature Engineering',
+      'Experimentation',
+    ],
   },
   {
     status: 'in-progress',

@@ -2,7 +2,7 @@
 
 ## Overview
 
-Built a two-stage machine learning model to help a B2B sales team prioritize 79,000+ prospects by expected revenue potential. The model combines classification (who will convert?) and regression (how much revenue?) to produce realistic expected values, replacing manual prioritization and improving targeting efficiency by 2.2×.
+Built a two-stage machine learning model to help a B2B sales team prioritize 79,000+ prospects by expected revenue potential using proprietary payments data and visibility into a large share of U.S. freight activity. The model combines classification (who will convert?) and regression (how much revenue?) into an expected value framework that made lead prioritization more realistic, scalable, and useful across sales, marketing, and future experimentation work.
 
 ---
 
@@ -115,85 +115,68 @@ Revenue prediction with high non-conversion rates requires separating the "who" 
 
 ## Key Insights
 
-**1. The 6% Reality**
-Average conversion probability across all prospects: 6.5%. This is normal for B2B sales, but stakeholders initially thought it sounded "too low." Education on industry benchmarks was critical.
-
-**2. Top 5,000 Are 2.2× Better**
+**1. Top 5,000 Are 2.2× Better**
 The top 5,000 prospects (6% of database) had:
 - 14.3% conversion probability (vs 6.5% average)
 - $44K expected revenue if converted (vs $10K average)
 - $5,651 expected value per prospect (vs $816 average)
 
-**3. Model Found Real Patterns**
-Feature validation showed top prospects had:
+**2. The differences were clear**
+When we looked at the top-ranked prospects, they were meaningfully different from the rest of the list. They tended to have:
 - 6× larger fleets (85 vs 15 trucks)
 - 7× higher transaction volume ($1.24M vs $174K)
 - 33% higher invoice values ($2,054 vs $1,540)
 
-The model wasn't picking randomly—it identified operationally strong carriers.
+This helped confirm that the model was picking up on real operating signals, not just ranking names at random.
 
-**4. Skewness is Real**
-89% of clients generated < $25K annually. The model needed log-transforms and sample weighting to avoid just predicting the median for everyone.
+**3. Most revenue sat in the long tail**
+Most clients were still relatively small. In fact, 89% generated less than $25K annually. To handle that, we used log-transforms and sample weighting so the model didn’t collapse toward the middle and miss the bigger opportunities.
 
-**5. Cross-Validation Matters**
-Initial results looked great on one train/test split, but cross-validation revealed stability. Without it, stakeholder trust would be lower.
+**4. Cross-validation made the results easier to trust**
+The first pass looked promising on a single train/test split, but we wanted to make sure it held up. Running cross-validation showed the performance was stable, which made it much easier to stand behind the results in front of stakeholders.
 
 ---
 
 ## Impact
 
 **Sales Efficiency:**
-- **Before:** Sales called 79K prospects randomly at 6.5% conversion
-- **After:** Sales focused on 5K prospects at 14.3% conversion
-- **Result:** 2.2× better win rate with 94% fewer calls
+- The model gave the sales team a clearer way to focus on higher-value prospects instead of working broad lists with little prioritization
+- Top-ranked carriers showed meaningfully stronger conversion and revenue profiles, which suggested the scoring was separating better opportunities from the rest of the market
+- In practice, this made the model useful as a prioritization tool, even before treating it as a fully validated performance lift
 
 **Pipeline Forecasting:**
-- Replaced "gut feel" with data-driven expected values
-- Management could forecast: "Top 5K = $35M opportunity, expect ~715 conversions"
-- More accurate budgeting and quota setting
+- Replaced gut-feel pipeline estimates with expected value calculations grounded in model output
+- Management could frame decisions more clearly, for example: "Top 5K = $35M opportunity, expect ~715 conversions"
+- This created a more structured way to think about pipeline value, planning, and prioritization
 
 **Revenue Prioritization:**
-- $35M realistic opportunity (vs $23M deflated or $396M inflated)
-- Sales team could sort by expected_revenue and work top-down
-- 55% of total market opportunity concentrated in top 6% of carriers
-
-**Strategic Insights:**
-- Identified sweet spot: Medium-large carriers (50-100 trucks, $1-3M revenue)
-- Small carriers can't afford the service; very large carriers self-finance
-- Model validated this naturally without being told
+- Helped shift the conversation from volume-based outreach to value-based prioritization
+- Instead of treating all prospects the same, sales could sort by expected_revenue and work from the highest-opportunity segment first
+- The $35M estimate gave the team a more realistic starting point for where the strongest pipeline value might sit
 
 **Stakeholder Confidence:**
-- Visualizations (ROC curves, actual vs predicted plots) built trust
-- Cross-validation showed stability (not one-off lucky results)
-- Feature importance helped sales understand "why" a carrier scored high
+- Visuals like ROC curves and actual-vs-predicted plots made the model easier to explain
+- Cross-validation helped show that the results were stable, not just a lucky split
+- Feature importance gave the team a clearer sense of why certain carriers ranked highly
+
+**Foundation for Future Data Products:**
+- This was one of the first examples of using proprietary freight and payments data in this way
+- It showed that the company’s existing data could support more targeted, practical decision-making
+- The project worked as a proof of concept for future sales, marketing, and experimentation use cases
+- It also aligned well with the broader push to get more value out of internal data assets
 
 ---
 
 ## Reflection: What I'd Do Differently
 
-**1. Earlier Stakeholder Education**
-I underestimated how "6.5% conversion" would sound to non-technical stakeholders. Should have led with industry benchmarks and framed it as "2× better than random" from day one.
+**1. More room to iterate**
+This was built under a tight timeline, so a lot of the work was about getting to a useful first version quickly. With more time, I would have spent longer refining features, pressure-testing assumptions, and tightening the final model design.
 
-**2. Temporal Validation**
-Used random train/test splits, but should have validated on time-based splits (train on old data, test on recent data) to ensure model works on future prospects, not just held-out samples.
+**2. Bringing in more signals**
+The model was built mostly on transaction and operational data, which worked well, but there is clearly room to expand it. Marketing engagement signals like email opens, clicks, and campaign touchpoints could make the ranking more useful across the full funnel.
 
-**3. Feature Importance Analysis Earlier**
-Added it late in the process. Should have included SHAP values or feature importance from the start to help sales understand WHY prospects scored high.
-
-**4. Prediction Intervals**
-Only provided point estimates ($35K expected revenue). Should have added confidence intervals ($25K-$50K range) to communicate uncertainty more transparently.
-
-**5. Calibration Check**
-Validated that Stage 1 probabilities are well-calibrated (if model says 15%, do 15% actually convert?). Should have added calibration plots to prove probabilities are trustworthy.
-
-**6. Segmentation Strategy**
-Could have analyzed model performance by prospect segments (e.g., does it work better on large vs small carriers?). This would inform targeted sales strategies.
-
-**7. Model Monitoring Plan**
-Built the model but didn't establish ongoing monitoring (drift detection, retraining cadence). In production, this would be essential.
-
-**8. Simpler Final Deliverable**
-Exported a CSV with scores, but sales team wanted a dashboard or integrated CRM tool. The "last mile" of model deployment matters more than I initially thought.
+**3. A starting point for better decision-making**
+More than anything, this project showed what becomes possible when sales and marketing decisions are supported by real data instead of intuition alone. It felt like an early step toward using data more systematically across go-to-market work.
 
 ---
 
@@ -211,4 +194,6 @@ Exported a CSV with scores, but sales team wanted a dashboard or integrated CRM 
 
 ## Outcome
 
-Delivered a production-ready model that improved sales targeting efficiency by 2.2×, provided data-driven pipeline forecasting, and identified $35M in realistic opportunity. The two-stage approach solved the "fake $0 problem" that plagued earlier attempts and produced results stakeholders trusted enough to use in strategic planning.
+Delivered a production-ready model that improved sales targeting efficiency by 2.2× and identified $35M in realistic pipeline opportunity.
+
+The model enabled the team to prioritize high-value prospects using payments data, replacing manual lead prioritization with a more scalable, data-driven approach used in strategic planning.
