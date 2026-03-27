@@ -4,7 +4,8 @@ import { ArrowLeft } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router';
 import { Navigation } from '../components/Navigation';
 import { Footer } from '../components/Footer';
-import rawCaseStudy from '../content/case_study_sales_targeting_model.md?raw';
+import rawSalesCaseStudy from '../content/case_study_sales_targeting_model.md?raw';
+import rawSlackCaseStudy from '../content/case_study_ai_powered_slack_data_assistant.md?raw';
 import { getProjectBySlug } from '../data/projects';
 
 type MarkdownBlock =
@@ -155,24 +156,47 @@ function SectionBlock({ title, content }: { title: string; content: string }) {
   );
 }
 
-const caseStudySections = splitSections(rawCaseStudy);
-
-const sectionOrder = [
-  'Overview',
-  'Problem',
-  'Approach',
-  'Iteration: What Changed',
-  'Key Insights',
-  'Impact',
-  "Reflection: What I'd Do Differently",
-] as const;
+const caseStudyContentBySlug = {
+  'sales-targeting-model': {
+    markdown: rawSalesCaseStudy,
+    sectionOrder: [
+      'Overview',
+      'Problem',
+      'Approach',
+      'Iteration: What Changed',
+      'Key Insights',
+      'Impact',
+      "Reflection: What I'd Do Differently",
+    ],
+  },
+  'ai-powered-slack-data-assistant': {
+    markdown: rawSlackCaseStudy,
+    sectionOrder: [
+      'Overview',
+      'Problem',
+      'Approach',
+      'System Design',
+      'Designing for Accuracy',
+      'Guardrails & Constraints',
+      'Handling Ambiguity',
+      'Agent Design',
+      'Output Design',
+      'What We Built',
+      'Example Use Cases',
+      'What Success Looks Like',
+      'Limitations',
+      'Reflection',
+    ],
+  },
+} as const;
 
 export default function ProjectCaseStudyPage() {
   const navigate = useNavigate();
   const { slug } = useParams();
   const project = slug ? getProjectBySlug(slug) : undefined;
+  const caseStudyConfig = slug ? caseStudyContentBySlug[slug as keyof typeof caseStudyContentBySlug] : undefined;
 
-  if (!project || slug !== 'sales-targeting-model') {
+  if (!project || !slug || !caseStudyConfig) {
     return (
       <div className="min-h-screen bg-background text-foreground flex flex-col">
         <Navigation />
@@ -196,9 +220,10 @@ export default function ProjectCaseStudyPage() {
     );
   }
 
+  const caseStudySections = splitSections(caseStudyConfig.markdown);
   const overview = caseStudySections.get('Overview') ?? '';
   const outcome = caseStudySections.get('Outcome') ?? project.outcome;
-  const displayTitle = rawCaseStudy
+  const displayTitle = caseStudyConfig.markdown
     .match(/^#\s+(.+)$/m)?.[1]
     ?.replace(/^Case Study:\s*/, '') ?? project.title;
 
@@ -252,7 +277,7 @@ export default function ProjectCaseStudyPage() {
           </motion.div>
 
           <div className="space-y-8">
-            {sectionOrder.map((sectionTitle) => {
+            {caseStudyConfig.sectionOrder.map((sectionTitle) => {
               const content = caseStudySections.get(sectionTitle);
 
               if (!content) {

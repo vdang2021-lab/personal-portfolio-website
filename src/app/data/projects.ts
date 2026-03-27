@@ -25,10 +25,12 @@ export const projects: ProjectItem[] = [
     ],
   },
   {
-    status: 'in-progress',
-    title: 'Health & Recovery Dashboard',
-    summary: 'Personal analytics project using wearable data to track sleep, activity, and recovery. Currently redesigning the dashboard to improve clarity and long-term trend analysis.',
-    tags: ['Looker Studio', 'Personal Analytics', 'Health Data'],
+    slug: 'ai-powered-slack-data-assistant',
+    status: 'complete',
+    title: 'AI-Powered Slack Data Assistant',
+    summary: 'Explored a Slack-based AI assistant that could turn plain-English data questions into Snowflake queries and return answers directly in workflow.',
+    outcome: 'Hackathon prototype that mapped out a practical path to faster, lower-friction data access for common stakeholder questions.',
+    tags: ['AI', 'Data Systems', 'Snowflake', 'Slack', 'LLMs'],
   },
   {
     status: 'coming-soon',
