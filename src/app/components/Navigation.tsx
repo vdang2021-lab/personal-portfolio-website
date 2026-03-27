@@ -5,6 +5,9 @@ import { useNavigate, useLocation } from 'react-router';
 export function Navigation() {
   const navigate = useNavigate();
   const location = useLocation();
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
   const scrollToContact = () => {
     if (location.pathname !== '/') {
       navigate('/');
@@ -40,7 +43,22 @@ export function Navigation() {
             return (
               <motion.button
                 key={item.href}
-                onClick={() => navigate(item.href)}
+                onClick={() => {
+                  if (item.href === '/') {
+                    if (location.pathname !== '/') {
+                      navigate('/');
+                      window.setTimeout(() => {
+                        scrollToTop();
+                      }, 120);
+                      return;
+                    }
+
+                    scrollToTop();
+                    return;
+                  }
+
+                  navigate(item.href);
+                }}
                 className={isActive ? 'text-foreground transition-colors' : 'text-muted-foreground hover:text-accent transition-colors'}
                 whileHover={{ y: -2 }}
                 transition={{ type: 'spring', stiffness: 300 }}
